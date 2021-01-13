@@ -1,5 +1,4 @@
 ﻿using Acme.Tarot.Cards;
-using Acme.Tarot.Domain.Cards;
 using Microsoft.EntityFrameworkCore;
 using Volo.Abp;
 using Volo.Abp.EntityFrameworkCore.Modeling;

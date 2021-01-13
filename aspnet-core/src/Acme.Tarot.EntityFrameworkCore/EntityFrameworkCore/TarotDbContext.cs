@@ -5,7 +5,7 @@ using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore.Modeling;
 using Volo.Abp.Identity;
 using Volo.Abp.Users.EntityFrameworkCore;
-using Acme.Tarot.Domain.Cards;
+using Acme.Tarot.Cards;
 
 namespace Acme.Tarot.EntityFrameworkCore
 {
