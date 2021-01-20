@@ -31,7 +31,7 @@ namespace Acme.Tarot.Cards {
                     CardFrontImgUrl = "",
                     CardContentText = "test",
                 };
-
+                await _tarotcardRepository.InsertAsync (tarotCard, autoSave : true);
             }
         }
     }
