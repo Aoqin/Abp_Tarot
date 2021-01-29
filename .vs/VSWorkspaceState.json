@@ -1,0 +1,11 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\aspnet-core",
+    "\\aspnet-core\\src",
+    "\\aspnet-core\\src\\Acme.Tarot.EntityFrameworkCore",
+    "\\aspnet-core\\src\\Acme.Tarot.EntityFrameworkCore\\EntityFrameworkCore"
+  ],
+  "SelectedNode": "\\aspnet-core\\Acme.Tarot.sln",
+  "PreviewInSolutionExplorer": false
+}

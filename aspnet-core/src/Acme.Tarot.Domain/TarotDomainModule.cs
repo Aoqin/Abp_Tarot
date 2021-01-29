@@ -13,6 +13,7 @@ using Volo.Abp.PermissionManagement.Identity;
 using Volo.Abp.PermissionManagement.IdentityServer;
 using Volo.Abp.SettingManagement;
 using Volo.Abp.TenantManagement;
+using Volo.Abp.EntityFrameworkCore;
 
 namespace Acme.Tarot
 {
@@ -27,7 +28,8 @@ namespace Acme.Tarot
         typeof(AbpPermissionManagementDomainIdentityServerModule),
         typeof(AbpSettingManagementDomainModule),
         typeof(AbpTenantManagementDomainModule),
-        typeof(AbpEmailingModule)
+        typeof(AbpEmailingModule),
+        typeof(AbpEntityFrameworkCoreModule)
     )]
     public class TarotDomainModule : AbpModule
     {

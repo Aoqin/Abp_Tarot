@@ -9,8 +9,12 @@ namespace Acme.Tarot {
              * into multiple profile classes for a better organization. */
 
             CreateMap<TarotCard, TarotCardDto> ();
-            CreateMap<TarotCardUpdateDto, TarotCard> ();
             CreateMap<TarotCardCreateDto, TarotCard> ();
+            CreateMap<TarotCardUpdateDto, TarotCard> ();
+
+            CreateMap<TarotCardCollection, TarotCardCollectionDto> ();
+            CreateMap<TarotCardCollectionCreateDto, TarotCardCollection> ();
+            CreateMap<TarotCardCollectionUpdateDto, TarotCardCollection> ();
         }
     }
 }

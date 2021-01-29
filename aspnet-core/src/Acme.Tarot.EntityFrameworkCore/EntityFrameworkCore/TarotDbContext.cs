@@ -19,6 +19,8 @@ namespace Acme.Tarot.EntityFrameworkCore {
      */
     [ConnectionStringName ("Default")]
     public class TarotDbContext : AbpDbContext<TarotDbContext> {
+        // public static string TablePrefix { get; set; } = AbpIdentityConsts.DefaultDbTablePrefix;
+        // public static string Schema { get; set; } = AbpIdentityConsts.DefaultDbSchema;
         public DbSet<AppUser> Users { get; set; }
 
         /* Add DbSet properties for your Aggregate Roots / Entities here.
