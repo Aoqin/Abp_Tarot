@@ -17,5 +17,9 @@ namespace Acme.Tarot.Cards {
       var collections = await AsyncExecuter.ToListAsync (queryable);
       return collections;
     }
+
+    // public async Task<TarotCardCollection> AddCards (TarotCardCollection tarotCardCollection, TarotCard tarotCard) {
+    //   var collection = await _repository.GetAsync ()
+    // }
   }
 }

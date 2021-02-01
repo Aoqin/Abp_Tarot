@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Acme.Tarot.Cards;
+using Microsoft.Extensions.DependencyInjection;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
@@ -41,6 +42,9 @@ namespace Acme.Tarot.EntityFrameworkCore {
                 /* The main point to change your DBMS.
                  * See also TarotMigrationsDbContextFactory for EF Core tooling. */
                 options.UseSqlServer ();
+                // options.Entity<TarotCardCollection> (orderOptions => {
+                //     orderOptions.DefaultWithDetailsFunc = query => query.Include (o => o.TarotCards);
+                // });
             });
         }
     }
