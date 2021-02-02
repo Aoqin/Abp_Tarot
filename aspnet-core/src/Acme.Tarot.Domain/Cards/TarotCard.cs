@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using Volo.Abp;
 using Volo.Abp.Domain.Entities.Auditing;
 
 namespace Acme.Tarot.Cards {
@@ -10,5 +12,18 @@ namespace Acme.Tarot.Cards {
         public string CardContentText { get; set; }
         public ICollection<TarotCardCollection> TarotCardCollections { get; set; }
         public List<CardBindCollection> CardBindCollections;
+
+        // public TarotCard (
+        //     Guid id, [NotNull] string name,
+        //     string descript,
+        //     string cardFrontImgUrl,
+        //     string cardContentText
+        // ) : base (id) {
+        //     Check.NotNull (id, nameof (id));
+        //     Name = name;
+        //     Descript = descript;
+        //     CardFrontImgUrl = cardFrontImgUrl;
+        //     CardContentText = cardContentText;
+        // }
     }
 }

@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using Volo.Abp;
 using Volo.Abp.Domain.Entities.Auditing;
 
 namespace Acme.Tarot.Cards {
@@ -29,11 +31,23 @@ namespace Acme.Tarot.Cards {
       CardBackImgUrl = CardBackImgUrl;
     }
 
-    public void AddCard (TarotCard tarotCard) {
-      if (TarotCards.Contains (tarotCard)) {
-        throw new ArgumentException ($"tarotcard {tarotCard.Name} is added");
+    public virtual void AddCard (TarotCard tarotCard) {
+      if (IsInCollection (tarotCard.Id)) {
+        return;
       }
       TarotCards.Add (tarotCard);
+    }
+
+    public virtual void RemoveCard (TarotCard tarotCard) {
+      if (!IsInCollection (tarotCard.Id)) {
+        return;
+      }
+      TarotCards.Remove (tarotCard);
+    }
+
+    public virtual bool IsInCollection (Guid id) {
+      Check.NotNull (id, nameof (id));
+      return TarotCards.Any (c => c.Id == id);
     }
   }
 }

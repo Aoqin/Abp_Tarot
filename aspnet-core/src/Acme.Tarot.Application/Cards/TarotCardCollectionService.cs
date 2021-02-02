@@ -4,10 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
-using Volo.Abp.EntityFrameworkCore;
 
 namespace Acme.Tarot.Cards {
   public class TarotCardCollectionService : ApplicationService
@@ -15,18 +15,90 @@ namespace Acme.Tarot.Cards {
   {
 
     private readonly IRepository<TarotCardCollection, Guid> cardCollectionRepository;
+    private readonly IRepository<TarotCard, Guid> tarotCardRepository;
     private readonly TarotCardCollectionManager manager;
 
-    public TarotCardCollectionService (IRepository<TarotCardCollection, Guid> repository, TarotCardCollectionManager tarotCardCollectionManager) {
+    public TarotCardCollectionService (
+      IRepository<TarotCardCollection, Guid> repository,
+      IRepository<TarotCard, Guid> cardrepository,
+      TarotCardCollectionManager tarotCardCollectionManager
+    ) {
       cardCollectionRepository = repository;
+      tarotCardRepository = cardrepository;
       manager = tarotCardCollectionManager;
     }
 
+    public async Task<TarotCardCollectionDto> CreateAsync (TarotCardCollectionCreateDto tarotCardCollectionCreateDto) {
+      var count = await cardCollectionRepository.CountAsync (x => x.Name == tarotCardCollectionCreateDto.Name);
+      if (count > 0) {
+        throw new BusinessException (@"tarotCardCollectionCreateDto.Name 已存在");
+      }
+      var collection = new TarotCardCollection () {
+        Name = tarotCardCollectionCreateDto.Name,
+        Descript = tarotCardCollectionCreateDto.Descript,
+        CardFrontImgUrl = tarotCardCollectionCreateDto.CardFrontImgUrl,
+        CardBackImgUrl = tarotCardCollectionCreateDto.CardBackImgUrl
+      };
+      var result = await cardCollectionRepository.InsertAsync (collection);
+      return ObjectMapper.Map<TarotCardCollection, TarotCardCollectionDto> (result);
+    }
+
+    public async Task<TarotCardCollectionDto> UpdateAsync (Guid id, TarotCardCollectionUpdateDto tarotCardCollectionUpdateDto) {
+      var cardcollection = await cardCollectionRepository.GetAsync (x => x.Id == id);
+      var result = await cardCollectionRepository.CountAsync (x => x.Name == tarotCardCollectionUpdateDto.Name && x.Name != cardcollection.Name);
+      if (result > 0) {
+        throw new BusinessException ("Name 已存在");
+      }
+      cardcollection.Name = tarotCardCollectionUpdateDto.Name;
+      cardcollection.Descript = tarotCardCollectionUpdateDto.Descript;
+      cardcollection.CardBackImgUrl = tarotCardCollectionUpdateDto.CardBackImgUrl;
+      cardcollection.CardFrontImgUrl = tarotCardCollectionUpdateDto.CardFrontImgUrl;
+      var collection = await cardCollectionRepository.UpdateAsync (cardcollection);
+      return ObjectMapper.Map<TarotCardCollection, TarotCardCollectionDto> (collection);
+    }
+
+    public async Task<TarotCardCollectionDto> AddCard (Guid id, List<Guid> ids) {
+      var cardcollection = await cardCollectionRepository.GetAsync (x => x.Id == id);
+      Check.NotNull (cardcollection, nameof (cardcollection));
+      await cardCollectionRepository.EnsureCollectionLoadedAsync (cardcollection, c => c.TarotCards);
+
+      var cards = await tarotCardRepository.Where (x => ids.Contains (x.Id)).ToListAsync ();
+      // TarotCard card = new TarotCard (tarotCardDto.Id, tarotCardDto.Name, tarotCardDto.Descript, tarotCardDto.CardFrontImgUrl, tarotCardDto.CardContentText);
+      // cardcollection.AddCard (card);
+      cards.ForEach (card => {
+        cardcollection.AddCard (card);
+      });
+      var collection = await cardCollectionRepository.UpdateAsync (cardcollection);
+      return ObjectMapper.Map<TarotCardCollection, TarotCardCollectionDto> (collection);
+    }
+
+    public async Task<TarotCardCollectionDto> RemoveCard (Guid id, List<Guid> ids) {
+      var cardCollection = await cardCollectionRepository.GetAsync (x => x.Id == id);
+      Check.NotNull (cardCollection, nameof (cardCollection));
+      await cardCollectionRepository.EnsureCollectionLoadedAsync (cardCollection, c => c.TarotCards);
+      var cards = await tarotCardRepository.Where (x => ids.Contains (x.Id)).ToListAsync ();
+      cards.ForEach (card => {
+        cardCollection.RemoveCard (card);
+      });
+      var collection = await cardCollectionRepository.UpdateAsync (cardCollection);
+      return ObjectMapper.Map<TarotCardCollection, TarotCardCollectionDto> (collection);
+    } 
+
     public async Task<TarotCardCollectionDto> FindByIdAsync (Guid id) {
+
+      #region 使用仓储
+      var queryable = cardCollectionRepository
+        .Where (x => x.Id == id)
+        .Include (t => t.TarotCards);
+      var collections = await AsyncExecuter.FirstOrDefaultAsync (queryable);
+      #endregion
+
       #region 使用 GetQueryableAsync
-      var queryable = await cardCollectionRepository.GetQueryableAsync ();
-      var result = queryable.Where (x => x.Id == id).Include (t => t.TarotCards);
-      var collections = await AsyncExecuter.FirstOrDefaultAsync (result);
+      // var queryable = await cardCollectionRepository.GetQueryableAsync ();
+      // var result = queryable
+      // .Where (x => x.Id == id)
+      // .Include (t => t.TarotCards);
+      // var collections = await AsyncExecuter.FirstOrDefaultAsync (result);
       #endregion
 
       #region 使用 EF CORE API
