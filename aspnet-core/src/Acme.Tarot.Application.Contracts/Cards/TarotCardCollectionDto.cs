@@ -8,6 +8,7 @@ namespace Acme.Tarot.Cards {
     public string Descript { get; set; }
     public string CardFrontImgUrl { get; set; }
     public string CardBackImgUrl { get; set; }
+    public int DivinationLimit { get; set; }
     public ICollection<TarotCardDto> TarotCards { get; set; }
   }
 }

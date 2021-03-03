@@ -14,6 +14,7 @@ namespace Acme.Tarot.Cards {
     public string CardBackImgUrl { get; set; }
     public ICollection<TarotCard> TarotCards { get; set; }
     public List<CardBindCollection> CardBindCollections { get; set; }
+    public int DivinationLimit { get; set; }
 
     public TarotCardCollection () {
       TarotCards = new Collection<TarotCard> ();
@@ -29,6 +30,7 @@ namespace Acme.Tarot.Cards {
       Descript = descript;
       CardFrontImgUrl = cardFrontImgUrl;
       CardBackImgUrl = CardBackImgUrl;
+      DivinationLimit = 3;
     }
 
     public virtual void AddCard (TarotCard tarotCard) {

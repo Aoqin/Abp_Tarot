@@ -3,5 +3,6 @@ namespace Acme.Tarot.Cards {
     public static int MaxNameLength { get; set; } = 32;
     public static int MaxDescriptLength { get; set; } = 256;
     public static int MaxURLLength { get; set; } = 256;
+    public static int DivinationDefaultLimit { get; set; } = 3;
   }
 }
