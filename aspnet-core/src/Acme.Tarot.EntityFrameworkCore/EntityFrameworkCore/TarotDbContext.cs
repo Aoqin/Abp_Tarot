@@ -28,7 +28,8 @@ namespace Acme.Tarot.EntityFrameworkCore {
          */
         public DbSet<TarotCard> TarotCards { get; set; }
         public DbSet<TarotCardCollection> TarotCardCollections { get; set; }
-
+        public DbSet<TarotCardSolution> TarotCardSolutions { get; set; }
+         
         public TarotDbContext (DbContextOptions<TarotDbContext> options) : base (options) {
 
         }
