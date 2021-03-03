@@ -1,4 +1,5 @@
-﻿using Acme.Tarot.Cards;
+﻿using System;
+using Acme.Tarot.Cards;
 using Microsoft.EntityFrameworkCore;
 using Volo.Abp;
 using Volo.Abp.EntityFrameworkCore.Modeling;
@@ -48,8 +49,20 @@ namespace Acme.Tarot.EntityFrameworkCore {
                 b.Property (x => x.Descript).HasMaxLength (TarotCardCollectionConsts.MaxDescriptLength);
                 b.Property (x => x.CardFrontImgUrl).HasMaxLength (TarotCardCollectionConsts.MaxURLLength).HasDefaultValue ("123");
                 b.Property (x => x.CardBackImgUrl).HasMaxLength (TarotCardCollectionConsts.MaxURLLength).HasDefaultValue ("123");
+                b.Property (x => x.DivinationLimit).HasDefaultValue<int> (TarotCardCollectionConsts.DivinationDefaultLimit);
             });
 
+            builder.Entity<TarotCardSolution> (b => {
+                b.ToTable (TarotConsts.DbTablePrefix + "TarotCardSolutions", TarotConsts.DbSchema);
+                b.ConfigureByConvention (); //auto configure for the base class props
+                // ...
+                b.HasKey (x => new { x.TarotCardCollectionId, x.TarotCardIdsToString });
+                // b.HasOne (x => x.TarotCardCollection);
+                // b.Navigation(x=>x.TarotCardCollection).UsePropertyAccessMode(PropertyAccessMode.Property);
+                // b.HasMany (x => x.TarotCards);
+                b.Property (x => x.Hexagram).HasMaxLength (1024);
+                b.Property (x => x.HexagramExplain).HasMaxLength (1024);
+            });
         }
     }
 }
