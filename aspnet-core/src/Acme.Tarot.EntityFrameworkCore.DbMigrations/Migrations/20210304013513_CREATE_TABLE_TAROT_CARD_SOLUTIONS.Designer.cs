@@ -4,15 +4,17 @@ using Acme.Tarot.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 
 namespace Acme.Tarot.Migrations
 {
     [DbContext(typeof(TarotMigrationsDbContext))]
-    partial class TarotMigrationsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210304013513_CREATE_TABLE_TAROT_CARD_SOLUTIONS")]
+    partial class CREATE_TABLE_TAROT_CARD_SOLUTIONS
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

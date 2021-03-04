@@ -24,13 +24,14 @@ namespace Acme.Tarot.Cards {
       Guid id, [NotNull] string name,
       string descript,
       string cardFrontImgUrl,
-      string cardBackImgUrl
+      string cardBackImgUrl,
+      int divinationLimit
     ) : base (id) {
       Name = name;
       Descript = descript;
       CardFrontImgUrl = cardFrontImgUrl;
       CardBackImgUrl = CardBackImgUrl;
-      DivinationLimit = 3;
+      DivinationLimit = divinationLimit;
     }
 
     public virtual void AddCard (TarotCard tarotCard) {
