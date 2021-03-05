@@ -17,8 +17,6 @@ namespace Acme.Tarot.Cards {
     public string CardFrontImgUrl { get; set; }
 
     [MaxLength (32)]
-    public string CardContentText { get; set; }
-    
-    public int DivinationLimit { get; set; } = 3;
+    public string CardContentText { get; set; } 
   }
 }
