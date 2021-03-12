@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Acme.Tarot.Cards;
 using Microsoft.EntityFrameworkCore;
 using Volo.Abp;
@@ -56,10 +59,15 @@ namespace Acme.Tarot.EntityFrameworkCore {
                 b.ToTable (TarotConsts.DbTablePrefix + "TarotCardSolutions", TarotConsts.DbSchema);
                 b.ConfigureByConvention (); //auto configure for the base class props
                 // ...
-                b.HasKey (x => new { x.TarotCardCollectionId, x.TarotCardIdsToString });
-                // b.HasOne (x => x.TarotCardCollection);
-                // b.Navigation(x=>x.TarotCardCollection).UsePropertyAccessMode(PropertyAccessMode.Property);
-                // b.HasMany (x => x.TarotCards);
+                b.Property (x => x.TarotCardIds)
+                    .HasConversion (
+                        v => string.Join (",", v.ToArray ()),
+                        v => v.Split (new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).ToList ().ConvertAll (s => Guid.Parse (s))
+                    );
+                b.HasKey (x => new { x.TarotCardCollectionId, x.TarotCardIds });
+                b.HasOne (x => x.TarotCardCollection).WithMany ().HasForeignKey (x => x.TarotCardCollectionId);
+                b.Ignore (x => x.TarotCards);
+                // // b.
                 b.Property (x => x.Hexagram).HasMaxLength (1024);
                 b.Property (x => x.HexagramExplain).HasMaxLength (1024);
             });
