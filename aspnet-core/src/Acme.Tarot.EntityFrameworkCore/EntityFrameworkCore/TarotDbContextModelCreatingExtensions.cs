@@ -66,7 +66,8 @@ namespace Acme.Tarot.EntityFrameworkCore {
                     );
                 b.HasKey (x => new { x.TarotCardCollectionId, x.TarotCardIds });
                 b.HasOne (x => x.TarotCardCollection).WithMany ().HasForeignKey (x => x.TarotCardCollectionId);
-                b.Ignore (x => x.TarotCards);
+                b.HasMany(x=>x.TarotCards);
+                // b.Ignore (x => x.TarotCards);
                 // // b.
                 b.Property (x => x.Hexagram).HasMaxLength (1024);
                 b.Property (x => x.HexagramExplain).HasMaxLength (1024);
