@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
@@ -47,12 +48,15 @@ namespace Acme.Tarot.Cards {
       return result;
     }
 
-    public async Task<TarotCardSolution> CreateAsync (Guid id, TarotCardSolutionCreateDto tarotCardSolutionCreateDto) {
-      Check.NotNull (id, nameof (id));
+    public async Task<TarotCardSolution> CreateAsync (TarotCardSolutionCreateDto tarotCardSolutionCreateDto) {
       Check.NotNull (tarotCardSolutionCreateDto, nameof (tarotCardSolutionCreateDto));
+      tarotCardSolutionCreateDto.TarotCardIds.Sort ();
+
       var lam = await TarotCardCollections.WithDetailsAsync (x => x.TarotCards);
-      var queryable = lam.Where (x => x.Id == id);
+      var queryable = lam.Where (x => x.Id == tarotCardSolutionCreateDto.TarotCardCollectionId);
+
       var collection = await AsyncExecuter.FirstOrDefaultAsync (queryable);
+
       if (collection == null) {
         throw new UserFriendlyException (@"tarotcard collection is null");
       } else {
@@ -60,6 +64,7 @@ namespace Acme.Tarot.Cards {
           throw new UserFriendlyException ($"divination need {collection.DivinationLimit} cards");
         }
         tarotCardSolutionCreateDto.TarotCardIds.Sort ();
+
         foreach (var itemId in tarotCardSolutionCreateDto.TarotCardIds) {
           var tarotcard = collection.TarotCards.ToList ().Find (x => x.Id == itemId);
           if (tarotcard == null) {
@@ -67,7 +72,12 @@ namespace Acme.Tarot.Cards {
           }
         }
 
-        var solution = await TarotCardSolutions.FindAsync (x => x.TarotCardCollectionId == id);
+        var solution = await TarotCardSolutions
+          .FindAsync (
+            x => x.TarotCardCollectionId == tarotCardSolutionCreateDto.TarotCardCollectionId &&
+            x.TarotCardIds.Equals (tarotCardSolutionCreateDto.TarotCardIds)
+          );
+
         if (solution != null) {
           throw new UserFriendlyException ("solution is already existed");
         }
@@ -75,10 +85,46 @@ namespace Acme.Tarot.Cards {
         var newSolution = new TarotCardSolution () {
           TarotCardCollectionId = collection.Id,
         };
+
         var result = await TarotCardSolutions.InsertAsync (newSolution);
         return result;
-        // var solution = await TarotCardSolutions.GetAsync (x => x.TarotCardCollectionId == id && x.TarotCardIdsToString == cardIdsToString);
       }
     }
+
+    public async Task<TarotCardSolution> UpdateAsync (TarotCardSolutionUpdateDto tarotCardSolutionUpdateDto) {
+      Check.NotNull (tarotCardSolutionUpdateDto, nameof (tarotCardSolutionUpdateDto));
+      tarotCardSolutionUpdateDto.TarotCardIds.Sort ();
+
+      var collection = await TarotCardCollections.GetAsync (x => x.Id == tarotCardSolutionUpdateDto.TarotCardCollectionId);
+      if (collection.DivinationLimit != tarotCardSolutionUpdateDto.TarotCardIds.Count) {
+        throw new UserFriendlyException ($"need {collection.DivinationLimit} cards");
+      }
+
+      var solution = await TarotCardSolutions.GetAsync (
+        x => x.TarotCardCollectionId == tarotCardSolutionUpdateDto.TarotCardCollectionId &&
+        x.TarotCardIds.Equals (tarotCardSolutionUpdateDto.TarotCardIds)
+      );
+      var newSolution = new TarotCardSolution () {
+        TarotCardCollectionId = tarotCardSolutionUpdateDto.TarotCardCollectionId,
+        TarotCardIds = tarotCardSolutionUpdateDto.TarotCardIds,
+        Hexagram = tarotCardSolutionUpdateDto.Hexagram,
+        HexagramExplain = tarotCardSolutionUpdateDto.HexagramExplain
+      };
+      var updatedSolution = await TarotCardSolutions.UpdateAsync (newSolution);
+      return updatedSolution;
+    }
+
+    public async Task<bool> DeleteAsync ([NotNull] Guid collectionId, [NotNull] List<Guid> tarotCardIds) {
+      tarotCardIds.Sort ();
+      Check.NotNullOrEmpty (collectionId.ToString (), nameof (collectionId));
+      Check.NotNullOrEmpty (tarotCardIds, nameof (tarotCardIds));
+      await TarotCardSolutions.GetAsync (x => x.TarotCardCollectionId == collectionId && x.TarotCardIds.Equals (tarotCardIds));
+      await TarotCardSolutions.DeleteAsync (
+        x => x.TarotCardCollectionId == collectionId &&
+        x.TarotCardIds.Equals (tarotCardIds)
+      );
+      return true;
+    }
+
   }
 }

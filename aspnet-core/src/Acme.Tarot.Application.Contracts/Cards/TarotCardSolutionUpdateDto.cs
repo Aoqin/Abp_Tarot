@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using Volo.Abp.Application.Dtos;
 
 namespace Acme.Tarot.Cards {
-  public class TarotCardSolutionUpdateDto : AuditedEntityDto {
+  public class TarotCardSolutionUpdateDto : EntityDto {
 
     [Required]
     public Guid TarotCardCollectionId { get; set; }

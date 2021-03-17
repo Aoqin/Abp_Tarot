@@ -8,7 +8,8 @@ namespace Acme.Tarot.Cards {
 
     [Required]
     public Guid TarotCardCollectionId { get; set; }
-
+    
+    [Required]
     public List<Guid> TarotCardIds { get; set; }
     public string Hexagram { get; set; }
 
