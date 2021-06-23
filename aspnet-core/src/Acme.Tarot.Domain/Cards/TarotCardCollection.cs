@@ -13,7 +13,7 @@ namespace Acme.Tarot.Cards {
     public string CardFrontImgUrl { get; set; }
     public string CardBackImgUrl { get; set; }
     public ICollection<TarotCard> TarotCards { get; set; }
-    public List<CardBindCollection> CardBindCollections { get; set; }
+    public virtual ICollection<CardBindCollection> CardBindCollections { get; set; }
     public int DivinationLimit { get; set; }
 
     public TarotCardCollection () {

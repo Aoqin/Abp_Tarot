@@ -11,8 +11,8 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Acme.Tarot.Migrations
 {
     [DbContext(typeof(TarotMigrationsDbContext))]
-    [Migration("20210310031513_ALTER_TAROT_CARD_SOLUTION_TABLE")]
-    partial class ALTER_TAROT_CARD_SOLUTION_TABLE
+    [Migration("20210621124017_CREATE_TAROT_CARD_SOLUTION")]
+    partial class CREATE_TAROT_CARD_SOLUTION
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -20,7 +20,7 @@ namespace Acme.Tarot.Migrations
             modelBuilder
                 .HasAnnotation("_Abp_DatabaseProvider", EfCoreDatabaseProvider.SqlServer)
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.4")
+                .HasAnnotation("ProductVersion", "5.0.7")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("Acme.Tarot.Cards.CardBindCollection", b =>
@@ -99,7 +99,15 @@ namespace Acme.Tarot.Migrations
                         .HasMaxLength(32)
                         .HasColumnType("nvarchar(32)");
 
+                    b.Property<Guid?>("TarotCardSolutionTarotCardCollectionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("TarotCardSolutionTarotCardIds")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("TarotCardSolutionTarotCardCollectionId", "TarotCardSolutionTarotCardIds");
 
                     b.ToTable("AppTarotCards");
                 });
@@ -170,7 +178,8 @@ namespace Acme.Tarot.Migrations
             modelBuilder.Entity("Acme.Tarot.Cards.TarotCardSolution", b =>
                 {
                     b.Property<Guid>("TarotCardCollectionId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("TarotCardCollectionId");
 
                     b.Property<string>("TarotCardIds")
                         .HasColumnType("nvarchar(450)");
@@ -2139,15 +2148,11 @@ namespace Acme.Tarot.Migrations
                     b.Navigation("TarotCardCollection");
                 });
 
-            modelBuilder.Entity("Acme.Tarot.Cards.TarotCardSolution", b =>
+            modelBuilder.Entity("Acme.Tarot.Cards.TarotCard", b =>
                 {
-                    b.HasOne("Acme.Tarot.Cards.TarotCardCollection", "TarotCardCollection")
-                        .WithMany()
-                        .HasForeignKey("TarotCardCollectionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("TarotCardCollection");
+                    b.HasOne("Acme.Tarot.Cards.TarotCardSolution", null)
+                        .WithMany("TarotCards")
+                        .HasForeignKey("TarotCardSolutionTarotCardCollectionId", "TarotCardSolutionTarotCardIds");
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLogAction", b =>
@@ -2435,6 +2440,11 @@ namespace Acme.Tarot.Migrations
             modelBuilder.Entity("Acme.Tarot.Cards.TarotCardCollection", b =>
                 {
                     b.Navigation("CardBindCollections");
+                });
+
+            modelBuilder.Entity("Acme.Tarot.Cards.TarotCardSolution", b =>
+                {
+                    b.Navigation("TarotCards");
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLog", b =>
